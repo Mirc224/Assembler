@@ -1,0 +1,30 @@
+TITLE MASM Template						(main.asm)
+
+INCLUDE Irvine32.inc
+.data
+Retazec DB"Ahoj ja som Miroslav Potocar!",0Dh,0Ah,0
+
+.code
+main PROC
+mov esi,0
+mov edx, OFFSET Retazec
+call ReadChar
+mov bl, al
+mov edi,0
+Vypis:
+mov al,[edx + edi]
+cmp al,0
+je Koniec
+inc edi
+cmp al, bl
+jne Pokracuj
+inc esi
+Pokracuj:
+jmp Vypis
+Koniec:
+mov eax, esi
+call WriteInt
+	exit
+main ENDP
+
+END main
