@@ -1,0 +1,52 @@
+TITLE MASM Template						(main.asm)
+
+INCLUDE Irvine32.inc
+.data
+RetazecR DB "assas",0Dh,0Ah,0
+RetazecS DB 15 dup (?)
+
+.code
+main PROC
+mov bl,'a'
+mov bh,'s'
+mov edi,0
+mov esi,0
+Porovnavanie:
+mov al,RetazecR[edi]
+cmp al,0
+je Koniec
+
+cmp al,bl
+je Podmienka1
+mov RetazecS[esi], al
+inc edi
+inc esi
+jmp Porovnavanie
+
+Podmienka1:
+mov al, RetazecR[edi + 1]
+cmp al, bh
+je Podmienka2
+mov al, RetazecR[edi]
+mov RetazecS[esi], al
+inc edi
+inc esi
+jmp Porovnavanie
+
+Podmienka2:
+mov RetazecS[esi], '*'
+inc esi
+inc edi
+inc edi
+jmp Porovnavanie
+
+Koniec:
+mov al, 0
+mov RetazecS[esi], al
+mov edx, offset RetazecS
+call WriteString
+	exit
+main ENDP
+
+END main
+
