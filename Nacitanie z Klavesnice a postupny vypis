@@ -1,0 +1,35 @@
+TITLE MASM Template						(main.asm)
+
+INCLUDE Irvine32.inc
+.data
+Retazec DB 10 dup (?)
+
+.code
+main PROC
+mov edx, OFFSET Retazec
+mov ecx, 10
+call ReadString
+mov edx, OFFSET Retazec
+call WriteString
+mov al,0Ah
+call WriteChar
+mov edi,0
+Vypis:
+mov al,[edx + edi]
+cmp al,0
+je Koniec
+call WriteChar
+inc al
+call WriteChar
+mov al,0Ah
+call WriteChar
+inc edi
+jmp Vypis
+Koniec:
+	exit
+main ENDP
+
+END main
+
+
+myMessage BYTE "Assembly language program example",0dh,0ah,0
