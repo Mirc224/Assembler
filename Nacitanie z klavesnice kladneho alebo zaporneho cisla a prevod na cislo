@@ -1,0 +1,56 @@
+TITLE MASM Template						(main.asm)
+
+INCLUDE Irvine32.inc
+.data
+NacitaneCislo DB 7 dup(?)
+Cislo DD 0
+Znamienko DB '+'
+
+.code
+main PROC
+mov edx, offset NacitaneCislo
+mov ecx, 7
+call ReadString
+mov edi, 0
+mov esi, 0
+cmp NacitaneCislo[0], '-'
+jne Hladanie
+mov Znamienko, '-'
+inc esi
+
+Hladanie:
+cmp NacitaneCislo[edi],0
+je Pokracovanie
+inc edi
+jmp Hladanie
+
+Pokracovanie:
+xor eax,eax
+mov al,NacitaneCislo[esi]
+inc esi
+sub al,48
+add Cislo,eax
+mov eax, 10
+cmp esi, edi
+je VyriesenieZnamienka
+mul Cislo
+mov Cislo,edx
+shl Cislo,16
+or Cislo, eax
+jmp Pokracovanie
+
+VyriesenieZnamienka:
+cmp Znamienko,'-'
+jne Koniec
+not Cislo
+inc Cislo
+
+Koniec:
+mov eax, 0
+mov eax, Cislo
+call WriteInt
+	exit
+main ENDP
+
+END main
+
