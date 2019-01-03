@@ -1,0 +1,101 @@
+TITLE MASM Template						(main.asm)
+
+INCLUDE Irvine32.inc
+.data
+Sprava1 DB "Ano",0Dh,0Ah,0
+Sprava2 DB "Nie",0Dh,0Ah,0
+Postupnost DW 4 dup (?)
+HladaneNajmensieCislo DW 30000
+OffSetNajmensieho DW -1
+dlzka equ 4
+
+.code
+NajmensieCislo PROC USES eax ebx ecx edi paOffsetPola, paDlzkaPola:word,paOffCis, paNajmensieAd
+xor ecx, ecx
+mov cx, paDlzkaPola
+mov edi,0
+
+Cyklus:
+xor eax,eax
+mov ebx, paOffsetPola
+mov ax, [ebx + edi*2]
+mov ebx, paNajmensieAd 
+cmp ax, [ebx]
+jbe Zapis
+Pokracovanie:
+inc edi
+loop Cyklus
+jmp Ukoncenie
+Zapis:
+mov ebx,paNajmensieAd
+mov [ebx], eax
+mov ebx,paOffCis
+mov eax, edi
+mov [ebx], eax
+jmp Pokracovanie
+Ukoncenie:
+mov ebx, paNajmensieAd
+xor eax,eax
+mov ax, [ebx]
+call WriteInt
+mov al, ' '
+call WriteChar
+mov ebx,paOffCis
+xor eax,eax
+mov ax, [ebx]
+call WriteInt
+mov al,0Dh
+call WriteChar
+mov al,0Ah
+call WriteChar
+ret
+NajmensieCislo ENDP
+
+NacitajPostupnost PROC USES ebx ecx edi paOffsetPostupnosti,paDlzka
+mov ecx, paDlzka
+mov edi,0
+
+CyklusNacitania:
+call ReadInt
+mov ebx, paOffsetPostupnosti
+mov [ebx + 2*edi],ax
+;mov edx,[ebx + 2*edi]
+inc edi
+loop CyklusNacitania
+
+ret
+NacitajPostupnost ENDP
+
+TestVysktu PROC USES eax ebx ecx edx edi paOffsetPostupnosti,paDlzka
+mov ebx, paOffsetPostupnosti
+call ReadInt
+mov ecx, paDlzka
+mov edi, 0
+mov edx, OFFSET Sprava2
+Prehladavanie:
+cmp ax, [ebx + edi*2]
+je Najdenie
+inc edi
+loop Prehladavanie
+jmp Koniec
+Najdenie:
+mov edx, offset Sprava1
+Koniec:
+call WriteString
+ret
+TestVysktu ENDP
+
+main PROC
+mov eax, OFFSET Postupnost
+INVOKE NacitajPostupnost, eax, dlzka
+mov eax, OFFSET Postupnost
+mov ebx, OFFSET HladaneNajmensieCislo
+mov ecx, OFFSET OffSetNajmensieho
+INVOKE NajmensieCislo, eax,dlzka,ecx,ebx
+mov ebx, offset Postupnost
+INVOKE TestVysktu,ebx,dlzka
+
+	exit
+main ENDP
+
+END main
