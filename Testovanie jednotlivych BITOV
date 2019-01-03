@@ -1,0 +1,38 @@
+TITLE MASM Template						(main.asm)
+
+INCLUDE Irvine32.inc
+.data
+Cislo DW 167
+
+.code
+main PROC
+mov eax, 167
+mov ecx, 16
+xor esi,esi
+Cyklus:
+mov ebx, ecx
+mov edx,8000h
+xor ecx, ecx
+mov ecx, esi
+xor eax,eax
+mov ax, Cislo
+shr edx, cl
+test eax, edx
+jnz Vypis1
+mov al,'0'
+call WriteChar
+Pokracovanie:
+inc esi
+mov ecx,ebx
+loop Cyklus
+jmp Koniec
+Vypis1:
+mov al,'1'
+call WriteChar
+jmp Pokracovanie
+Koniec:
+
+	exit
+main ENDP
+
+END main
