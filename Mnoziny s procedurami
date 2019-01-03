@@ -1,0 +1,90 @@
+TITLE MASM Template						(main.asm)
+
+INCLUDE Irvine32.inc
+.data
+MnozinaX DD 0
+MnozinaY DD 0
+PomocnaMN DD 0
+.code
+
+VygenerujNahodnuM PROC USES eax ebx ecx edx edi paAdresaMN
+mov edx,0
+mov ecx,10
+Cyklus:
+mov edi,ecx
+mov eax,32
+call RandomRange
+call WriteInt
+mov cl, al
+mov edx,1
+shl edx, cl
+mov ebx, paAdresaMN
+or [ebx], edx
+mov ecx, edi
+mov al, ' '
+call WriteChar
+loop Cyklus
+mov al, 0Dh
+call WriteChar
+mov al, 0Ah
+call WriteChar
+ret
+VygenerujNahodnuM ENDP
+
+VypisMN PROC USES eax ebx ecx edx edi esi paAdresaMn
+mov ebx, paAdresaMn
+mov ecx, 32
+mov esi,0
+Opakovanie:
+mov edi,ecx
+mov eax,1
+mov ecx, esi
+shl eax, cl
+mov edx, [ebx]
+test [ebx], eax
+jnz Vypis
+Pokracuj1:
+inc esi
+mov ecx, edi
+loop Opakovanie
+jmp Zaver
+
+Vypis:
+mov eax, esi
+call WriteInt
+mov al, ' '
+call WriteChar
+jmp Pokracuj1
+
+Zaver:
+mov al, 0Dh
+call WriteChar
+mov al, 0Ah
+call WriteChar
+
+ret
+VypisMN ENDP
+
+VypisDoplnok PROC USES eax ebx paAdresaMN
+mov ebx, paAdresaMN
+mov eax, [ebx]
+not eax
+mov PomocnaMN, eax
+mov ebx, OFFSET PomocnaMN
+INVOKE VypisMN,ebx
+
+ret
+VypisDoplnok ENDP
+
+
+main PROC
+mov ebx, offset MnozinaX
+INVOKE VygenerujNahodnuM,ebx
+mov ebx, offset MnozinaX
+INVOKE VypisMN,ebx
+INVOKE VypisDoplnok,ebx
+
+	exit
+main ENDP
+
+END main
