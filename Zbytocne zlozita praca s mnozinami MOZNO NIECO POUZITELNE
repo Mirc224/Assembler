@@ -1,0 +1,119 @@
+TITLE MASM Template						(main.asm)
+
+INCLUDE Irvine32.inc
+.data
+Draci DD 6 dup (0)
+Pocet DD 6
+.code
+VytvorDraka PROC USES eax ebx ecx edx edi esi paPocetHlav,paOffset,paZaciatok,paKoniec
+mov eax,paPocetHlav
+shl eax,24
+mov ebx, paOffset
+mov [ebx], eax
+mov ecx, paZaciatok
+Cyklenie:
+mov eax,1
+shl eax,cl
+mov ebx, paOffset
+or [ebx], eax
+inc ecx
+cmp ecx,paKoniec
+jne Cyklenie
+
+ret
+VytvorDraka ENDP
+
+PocetChrliacichVCase PROC USES eax ebx ecx edx edi esi paOffsetMnoziny,paPocet,paZaciatok, paKoniec
+xor eax,eax
+mov ecx,paZaciatok
+
+Maska:
+mov edx,1
+shl edx,cl
+or eax,edx
+inc ecx
+cmp ecx,paKoniec
+jne Maska
+mov edx, eax
+mov ecx,paPocet
+mov edi,0
+xor eax,eax
+Cyklus:
+mov ebx,paOffsetMnoziny
+mov esi,[ebx + edi*4]
+and esi, edx
+cmp esi, edx
+jne Pokracuj
+inc eax
+Pokracuj:
+inc edi
+loop Cyklus
+
+Zaver:
+call WriteInt
+ret
+PocetChrliacichVCase ENDP
+
+ChrlenieZaroven PROC USES eax ebx ecx edx edi esi paOffsetPola,paPocet,paSucasne
+mov ecx,24
+mov esi, 0
+mov edi,0
+VonkajsiCyklus:
+mov esi,ecx
+mov edx,1
+shl edx,ecx ;edx je maska
+
+
+
+
+mov ecx,esi
+inc edi
+loop VonkajsiCyklus
+
+
+ret
+ChrlenieZaroven ENDP
+
+
+main PROC
+
+mov eax,3
+mov ebx,offset Draci
+mov ecx,6
+mov edx,12
+INVOKE VytvorDraka,eax,ebx,ecx,edx
+mov ebx,offset Draci[4]
+mov eax,5
+mov ecx,8
+mov edx,14
+INVOKE VytvorDraka,eax,ebx,ecx,edx
+mov ebx,offset Draci[8]
+mov eax,10
+mov ecx,9
+mov edx,15
+INVOKE VytvorDraka,eax,ebx,ecx,edx
+mov ebx,offset Draci[12]
+mov eax,6
+mov ecx,12
+mov edx,18
+INVOKE VytvorDraka,eax,ebx,ecx,edx
+mov ebx,offset Draci[16]
+mov eax,7
+mov ecx,15
+mov edx,20
+INVOKE VytvorDraka,eax,ebx,ecx,edx
+mov ebx,offset Draci[20]
+mov eax,4
+mov ecx,16
+mov edx,21
+INVOKE VytvorDraka,eax,ebx,ecx,edx
+
+mov eax, offset Draci
+mov ebx,16
+mov ecx,20
+INVOKE PocetChrliacichVCase,eax,Pocet,ebx,ecx
+
+	exit
+main ENDP
+
+END main
