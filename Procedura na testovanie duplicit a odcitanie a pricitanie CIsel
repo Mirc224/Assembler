@@ -1,0 +1,98 @@
+TITLE MASM Template						(main.asm)
+
+INCLUDE Irvine32.inc
+.data
+NacitaneCislo DB 1,2,3,4,0
+ObrateneCislo DB 5 dup (0)
+Sprava DB "Zadali ste rovnake cisla!",0Dh,0Ah,0
+Vyskyt DB 0
+Cislo DD 0
+.code
+
+ZadanieBezDuplicity PROC USES eax ebx edx ecx edi esi paAdresa,paDlzka
+mov ebx, paAdresa
+dec ebx
+Opakovanie:
+mov edx,paAdresa
+mov ecx,paDlzka
+call ReadString
+mov ecx,paDlzka
+dec ecx
+Cyklenie:
+mov edi,ecx
+mov al,[ebx + ecx]
+mov ecx,paDlzka
+Prehladavanie:
+mov ah,[ebx + ecx]
+cmp al, [ebx + ecx]
+jne BezDuplicit
+cmp ecx,edi
+je BezDuplicit
+mov edx, OFFSET Sprava
+call WriteString
+jmp Opakovanie
+BezDuplicit:
+loop Prehladavanie
+mov ecx,edi
+loop Cyklenie
+
+ret
+ZadanieBezDuplicity ENDP
+
+
+main PROC
+
+mov ebx, OFFSET NacitaneCislo
+mov eax, 5
+INVOKE ZadanieBezDuplicity,ebx,eax
+mov ecx,4
+mov edi,0
+Obratenie:
+mov al,NacitaneCislo[ecx-1]
+mov ObrateneCislo[edi], al
+inc edi
+loop Obratenie
+
+
+mov ecx,4
+Zmena:
+xor eax,eax
+mov al,ObrateneCislo[ecx-1]
+sub al,48
+mov bl,2
+div bl
+cmp ah,0
+je Parne
+xor eax,eax
+mov al,ObrateneCislo[ecx-1]
+sub al,48
+add al,7
+mov bl,10
+div bl
+add ah,48
+mov ObrateneCislo[ecx-1],ah
+jmp Pokracuj2
+
+
+Parne:
+xor eax,eax
+mov al,ObrateneCislo[ecx-1]
+sub al,48
+add al,2
+mov bl,10
+div bl
+add ah,48
+mov ObrateneCislo[ecx-1],ah
+jmp Pokracuj2
+
+Pokracuj2:
+loop Zmena
+mov edx, offset ObrateneCislo
+call WriteString
+
+
+
+	exit
+main ENDP
+
+END main
