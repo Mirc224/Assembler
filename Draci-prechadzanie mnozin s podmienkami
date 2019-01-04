@@ -1,0 +1,153 @@
+TITLE MASM Template						(main.asm)
+
+INCLUDE Irvine32.inc
+.data
+Draci DB 3,6,12
+DB 5,8,14
+DB 10,9,15
+DB 6, 12, 18
+DB 7, 15, 20
+DB 4, 16, 21
+
+PomocnyPocetDrakov DB 0
+Hodiny DB 0
+
+Cislo DD 0
+
+PocetUdajov equ 3
+PocetDrakov equ 6
+.code
+
+
+main PROC
+
+mov dl, 15
+mov dh, 18
+
+mov bl,0
+mov bh,0
+mov esi,0
+mov edi,0
+mov ecx, PocetDrakov
+
+Cyklus:
+xor eax,eax
+mov al, 3
+mul bl
+mov esi,eax
+mov ah, Draci[esi + 1]
+cmp Draci[esi + 1],dl
+jbe Podmienka1
+Pokracuj:
+inc bl
+loop Cyklus
+jmp Zaver
+Podmienka1:
+mov ah, Draci[esi + 2]
+cmp Draci[esi + 2],dh
+jb Pokracuj
+inc bh
+jmp Pokracuj
+Zaver:
+xor eax,eax
+mov al,bh
+call WriteInt
+
+mov eax,0
+mov ebx,0
+mov edx,0
+mov al,0Dh
+call WriteChar
+mov al,0Ah
+call WriteChar
+
+mov ecx,24
+VonkajsiCyklus:
+mov edi,ecx
+
+mov ecx,PocetDrakov
+mov PomocnyPocetDrakov,0
+mov dl,0
+VnutrornyCyklus:
+xor eax,eax
+mov al,3
+mul dl
+mov ebx,eax
+mov eax, edi
+cmp Draci[ebx + 1],al
+jbe Test1
+jmp Pokracuj2
+
+Test1:
+cmp Draci[ebx + 2],al
+ja TestPocetDrakov
+jmp Pokracuj2
+TestPocetDrakov:
+inc PomocnyPocetDrakov
+cmp PomocnyPocetDrakov,2
+je PripocitajHodinu
+cmp PomocnyPocetDrakov,2
+ja OdpocitajHodinu
+jmp Pokracuj2
+
+PripocitajHodinu:
+inc Hodiny
+jmp Pokracuj2
+
+OdpocitajHodinu:
+dec Hodiny
+jmp PredcasnyKonie
+
+Pokracuj2:
+inc dl
+loop VnutrornyCyklus
+
+PredcasnyKonie:
+mov ecx,edi
+loop VonkajsiCyklus
+xor eax,eax
+mov al,Hodiny
+call WriteInt
+
+mov PomocnyPocetDrakov,0
+
+mov dl, 8
+mov dh, 9
+xor eax,eax
+xor ebx,ebx
+xor esi,esi
+xor edi,edi
+mov ecx,PocetDrakov
+
+Cyklus2:
+xor eax,eax
+mov al, 3
+mul bl
+mov esi,eax
+mov ah, Draci[esi + 1]
+cmp Draci[esi + 1],dl
+jbe Podmienka3
+
+Pokracuj3:
+inc bl
+loop Cyklus2
+jmp Zaver2
+
+Podmienka3:
+mov ah, Draci[esi + 2]
+cmp Draci[esi + 2],dh
+jb Pokracuj3
+mov bh,Draci[esi]
+add PomocnyPocetDrakov,bh
+jmp Pokracuj3
+
+Zaver2:
+xor eax,eax
+mov al,PomocnyPocetDrakov
+call WriteInt
+
+
+	exit
+main ENDP
+
+END main
