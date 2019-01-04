@@ -1,0 +1,124 @@
+TITLE MASM Template						(main.asm)
+
+INCLUDE Irvine32.inc
+.data
+MagickyStvorec DB 4,14,15,-1
+DB 9,7,6,12
+DB 5,11,10,8
+DB 16,2,3,13
+
+SpravaZla DB "Stvorec nie je magicky!",0Ah,0Dh,0
+SpravaDobra DB "Stvorec je magicky!",0Ah,0Dh,0
+
+PomocnySucet DB 0
+PomocnySucetStlpec DB 0
+SucetHlavnejDiagonaly DB 0
+SucetVedlajsejDiagonaly DB 0
+Temp DD 0
+PocetRiadkov equ 4
+PocetStlpcov equ 4
+
+.code
+main PROC
+
+mov PomocnySucet,0
+mov ecx,PocetRiadkov
+mov esi,0
+xor edx,edx
+Scitanie:
+xor eax,eax
+mov al,PocetStlpcov
+mul dl
+mov bl,MagickyStvorec[eax]
+add PomocnySucet,bl
+inc edx
+loop Scitanie
+
+mov ecx,PocetStlpcov
+mov edi,0
+VonkajsiCyklus:
+mov edx,ecx
+mov ecx, PocetStlpcov
+xor eax,eax
+mov esi,0
+VnutornyCyklus:
+xor ebx,ebx
+
+add al, MagickyStvorec[esi + edi*PocetStlpcov]
+add ah, MagickyStvorec[esi*PocetStlpcov + edi]
+
+mov Temp,eax
+xor eax,eax
+xor ebx,ebx
+mov bl, PocetRiadkov
+dec bl
+sub ebx, esi
+add eax, edi
+cmp eax, ebx
+jne Test2
+mov bl, MagickyStvorec[edi*PocetStlpcov + esi]
+add SucetVedlajsejDiagonaly,bl
+
+Test2:
+mov eax, Temp
+cmp esi,edi
+jne Pokracuj
+mov bl, MagickyStvorec[esi*PocetStlpcov + edi]
+
+add SucetHlavnejDiagonaly,bl
+Pokracuj:
+inc esi
+loop VnutornyCyklus
+mov ecx,edx
+cmp PomocnySucet,al
+jne PredcasnyKoniec
+cmp PomocnySucet,ah
+jne PredcasnyKoniec
+
+
+jmp PokracovanieCyklu
+
+PokracovanieCyklu:
+inc edi
+loop VonkajsiCyklus
+mov edx, OFFSET SpravaDobra
+mov bl, PomocnySucet
+cmp SucetHlavnejDiagonaly,bl
+jne PredcasnyKoniec
+cmp SucetVedlajsejDiagonaly,bl
+jne PredcasnyKoniec
+jmp Koniec
+PredcasnyKoniec:
+mov edx, OFFSET SpravaZla
+Koniec:
+call WriteString
+
+xor esi,esi
+xor edi,edi
+xor ebx,ebx
+mov ecx, PocetRiadkov
+HladanieMinus1:
+mov ebx,ecx
+mov esi,0
+mov ecx, PocetStlpcov
+Vnutro:
+mov al,MagickyStvorec[esi*PocetStlpcov + edi]
+cmp MagickyStvorec[esi*PocetRiadkov + edi], -1
+jne Nenajdene
+mov eax, esi
+call WriteInt
+mov eax, edi
+call WriteInt
+jmp Koniec2
+Nenajdene:
+inc edi
+loop Vnutro
+mov ecx,ebx
+inc edi
+loop HladanieMinus1
+Koniec2:
+
+	exit
+main ENDP
+
+END main
