@@ -1,0 +1,50 @@
+TITLE MASM Template						(main.asm)
+
+INCLUDE Irvine32.inc
+.data
+MagickyStvorec DB 4,14,15,16,20
+DB 9,7,6,15,12
+DB 5,11,10,14,19
+DB 5,11,10,13,18
+DB 5,11,10,13,17
+
+PocetRiadkov equ 5
+PocetStlpcov equ 5
+
+.code
+main PROC
+
+xor esi,esi
+xor edi,edi
+xor edx,edx
+mov ecx, PocetRiadkov
+Vonok:
+mov edx, ecx
+mov ecx, PocetStlpcov
+mov esi,0
+Vnutro:
+xor eax,eax
+mov al, PocetStlpcov
+mov ebx,edi
+mul bl
+mov ebx,eax
+add ebx, esi
+mov al,MagickyStvorec[ebx]
+call WriteInt
+mov al, ' '
+call WriteChar
+inc esi
+loop Vnutro
+mov al,0Ah
+call WriteChar
+mov al,0Dh
+call WriteChar
+inc edi
+mov ecx,edx
+loop Vonok
+
+
+	exit
+main ENDP
+
+END main
