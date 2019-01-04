@@ -1,0 +1,66 @@
+TITLE MASM Template						(main.asm)
+
+INCLUDE Irvine32.inc
+.data
+
+Dlzka equ 15
+PovodnyText DB Dlzka dup (?)
+SifrovanyText DB Dlzka dup (0)
+Kluc DB 10,5,0,8,4,13,7,2,11,1,12,9,3,6
+
+Sprava DB "Zadali ste male pismena!",0Dh,0Ah,0
+
+
+.code
+
+KontrolaVelkyPismen PROC USES eax ebx ecx edx edi esi paDlzka,paAdresa
+Zadavanie:
+mov edx,paAdresa
+mov ecx, paDlzka
+call ReadString
+mov edi,0
+Kontrola:
+mov al, [edx + edi]
+cmp al,0
+je Koniec
+cmp al,65
+jb Chyba
+cmp al,90
+ja Chyba
+inc edi
+loop Kontrola
+jmp Koniec
+
+Chyba:
+mov edx, offset Sprava
+call WriteString
+
+jmp Zadavanie
+
+Koniec:
+ret
+KontrolaVelkyPismen ENDP
+
+main PROC
+
+mov eax, offset PovodnyText
+mov ebx, Dlzka
+INVOKE KontrolaVelkyPismen,ebx,eax
+mov ecx, 14
+mov edi,0
+Sifrovanie:
+xor eax,eax
+xor edx,edx
+mov al,Kluc[edi]
+mov dl,PovodnyText[edi]
+mov SifrovanyText[eax],dl
+inc edi
+loop Sifrovanie
+
+mov edx, OFFSET SifrovanyText
+call WriteString
+
+	exit
+main ENDP
+
+END main
