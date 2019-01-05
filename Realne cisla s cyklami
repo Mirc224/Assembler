@@ -1,0 +1,58 @@
+TITLE MASM Template						(main.asm)
+
+INCLUDE Irvine32.inc
+.data
+
+Pocet DD 3.0
+Vyska DD 180.0, 179.2, 181.5
+StrednaHodnota DD 0.0
+Odchylka DD 0.0
+
+Sprava DB "Zadali ste male pismena!",0Dh,0Ah,0
+
+.code
+
+main PROC
+
+xor edi,edi
+mov ecx, lengthof Vyska
+dec ecx
+finit
+fld Vyska[4*edi]
+Cyklus:
+inc edi
+fld Vyska[4*edi]
+faddp st(1),st(0)
+loop Cyklus
+fld Pocet
+fdiv
+fst StrednaHodnota
+call WriteFloat
+xor edi,edi
+fld Vyska[edi*4]
+fsub 
+fld st(0)
+fmul
+xor edi,edi
+mov ecx, lengthof Vyska
+dec ecx
+SmerodajnaOdchylka:
+inc edi
+fld StrednaHodnota
+fld Vyska[edi*4]
+fsub 
+fld st(0)
+fmul
+faddp st(1),st(0)
+loop SmerodajnaOdchylka
+fld Pocet
+fdiv
+fsqrt
+fst Odchylka
+
+call WriteFloat
+
+	exit
+main ENDP
+
+END main
