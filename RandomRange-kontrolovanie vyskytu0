@@ -1,0 +1,74 @@
+TITLE MASM Template						(main.asm)
+
+INCLUDE Irvine32.inc
+.data
+
+Text DB 11 dup (0)
+PoziciaNuly DD 0
+Pocitadlo DD 0
+
+Sprava DB "Zadali ste male pismena!",0Dh,0Ah,0
+
+.code
+
+main PROC
+
+Znova:
+call Randomize 
+mov eax,11 
+call RandomRange
+mov ecx,eax
+cmp ecx,4
+jna Znova
+mov edi,0
+NahodnyText:
+mov ebx, 65
+mov eax, 25
+call RandomRange
+add ebx,eax
+mov Text[edi],bl
+inc edi
+loop NahodnyText
+
+
+mov edx, offset Text
+call WriteString
+mov edi,0
+mov ecx,11
+Hladanie0:
+cmp Text[edi],0
+je Pokracuj
+inc edi
+loop Hladanie0
+Pokracuj:
+mov PoziciaNuly,edi
+mov ecx, PoziciaNuly
+xor edi,edi
+VonkajsiCyklus:
+mov edx,ecx
+mov ecx, PoziciaNuly
+mov esi,0
+mov bl,Text[edi]
+mov Pocitadlo,0
+VnutornyCyklus:
+mov bh,Text[esi]
+cmp bh,bl
+jae PokracovanieCyklu
+inc Pocitadlo
+PokracovanieCyklu:
+inc esi
+loop VnutornyCyklus
+mov eax, Pocitadlo
+call WriteInt
+mov al,','
+call WriteChar
+mov ecx,edx
+inc edi
+loop VonkajsiCyklus
+
+
+
+	exit
+main ENDP
+
+END main
