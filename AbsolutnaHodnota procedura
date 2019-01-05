@@ -1,0 +1,100 @@
+TITLE MASM Template						(main.asm)
+
+INCLUDE Irvine32.inc
+.data
+
+Postupnost DD 10 dup (?)
+CisloX DD 0
+NajmensiaVzdialenost DD 65535
+NajblizsieCislo DD 0
+Index DD 0
+Sprava DB "Zadali ste male pismena!",0Dh,0Ah,0
+
+.code
+
+ABS PROC 
+push eax
+cmp ebx,0       ;compare ebx to zero
+jle L1          ;Jump if less then or equal to zero
+mov eax, ebx    ;copy ebx to eax, means eax is positive
+Jmp L2          ;jumps to label return
+L1:neg ebx      ;negates ebx    
+mov eax,ebx     ;copy neagted ebx to eax        
+L2:
+pop eax
+ret
+ABS ENDP
+
+
+
+main PROC
+call Randomize 
+mov ecx, 10
+xor edi,edi
+
+mov ebx, -32768
+mov eax, 65535
+
+call RandomRange
+add ebx,eax
+mov CisloX, ebx
+mov eax, ebx
+call WriteInt
+mov al,0Dh
+call WriteChar
+mov al,0Ah
+call WriteChar
+
+xor edi,edi
+Naplnenie:
+
+mov ebx, -32768
+mov eax, 65535
+
+call RandomRange
+add ebx,eax
+mov Postupnost[edi*4], ebx
+mov eax,ebx
+call WriteInt
+inc edi
+loop Naplnenie
+
+mov al,0Dh
+call WriteChar
+mov al,0Ah
+call WriteChar
+
+
+mov ecx,10
+mov eax,-1
+mov esi,65535
+xor edi,edi
+HladanieNajblizssieho:
+mov ebx, Postupnost[edi*4]
+mov edx, CisloX
+sub ebx, edx
+call ABS
+cmp ebx, esi
+jnbe Pokracuj
+mov esi,ebx
+mov eax,edi
+mov Index,eax
+mov edx,Postupnost[edi*4]
+mov NajblizsieCislo, edx
+Pokracuj:
+inc edi
+loop HladanieNajblizssieho
+
+mov al,0Dh
+call WriteChar
+mov al,0Ah
+call WriteChar
+
+mov eax, Index
+call WriteInt
+mov eax, NajblizsieCislo
+call WriteInt
+	exit
+main ENDP
+
+END main
