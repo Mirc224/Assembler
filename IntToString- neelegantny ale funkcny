@@ -74,12 +74,10 @@ add edx,48
 mov PrevedeneCislo[edi],dl
 inc edi
 mov PrevedeneCislo[edi],0
-
+Koniec:
 mov edx, OFFSET PrevedeneCislo
 call WriteString
 
-
-Koniec:
 	exit
 main ENDP
 
