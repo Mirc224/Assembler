@@ -1,0 +1,86 @@
+TITLE MASM Template						(main.asm)
+
+INCLUDE Irvine32.inc
+.data
+
+
+PrevedeneCislo DB 10 dup (?)
+Medzivysledok DW 0
+Desat DW 10
+
+.code
+
+main PROC
+
+mov esi, 32000
+cmp esi,0  
+jle L1             
+mov PrevedeneCislo,'+'
+Jmp L2          
+L1:neg esi        
+mov PrevedeneCislo,'-'
+L2:
+
+
+mov edi,1
+Cyklus:
+mov eax,1
+mov ecx,edi
+Vnutro:
+mul Desat
+loop Vnutro
+cmp eax, esi
+jae Dalej
+inc edi
+jmp Cyklus
+Dalej:
+cmp edi,1
+jne Pokracovanie
+cmp esi,10
+jne Nedesiatka
+mov PrevedeneCislo[1],'1'
+mov PrevedeneCislo[2],'0'
+mov PrevedeneCislo[3],0
+jmp Koniec
+Nedesiatka:
+mov eax,esi
+add eax,48
+mov PrevedeneCislo[1],al
+mov PrevedeneCislo[2],0
+jmp Koniec
+Pokracovanie:
+dec edi
+mov ecx,edi
+mov edi,1
+mov edx,esi
+Prevod:
+mov eax,1
+mov esi,ecx
+push edx
+Nasobenie:
+mul Desat
+loop Nasobenie
+pop edx
+mov ebx,eax
+mov eax,edx
+xor edx,edx
+div ebx
+add eax,48
+mov PrevedeneCislo[edi],al
+inc edi
+mov ecx,esi
+loop Prevod
+add edx,48
+mov PrevedeneCislo[edi],dl
+inc edi
+mov PrevedeneCislo[edi],0
+
+mov edx, OFFSET PrevedeneCislo
+call WriteString
+
+
+Koniec:
+	exit
+main ENDP
+
+END main
