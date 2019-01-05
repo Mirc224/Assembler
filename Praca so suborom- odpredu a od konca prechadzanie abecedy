@@ -1,0 +1,91 @@
+TITLE MASM Template						(main.asm)
+
+INCLUDE Irvine32.inc
+.data
+outfile	DD ?  
+Text DB 11 dup (0)
+Dlzka equ 10
+PoziciaNuly DD 0
+Pocitadlo DD 0
+filename db "test.txt",0
+
+Sprava DB "Zadali ste male pismena!",0Dh,0Ah,0
+
+.code
+
+KontrolaVelkyPismen PROC USES eax ebx ecx edx edi esi paDlzka,paAdresa
+Zadavanie:
+mov edx,paAdresa
+mov ecx, paDlzka
+call ReadString
+mov edi,0
+Kontrola:
+mov al, [edx + edi]
+cmp al,0
+je Koniec
+cmp al,65
+jb Chyba
+cmp al,90
+ja Chyba
+inc edi
+loop Kontrola
+jmp Koniec
+
+Chyba:
+mov edx, offset Sprava
+call WriteString
+
+jmp Zadavanie
+
+Koniec:
+ret
+KontrolaVelkyPismen ENDP
+
+
+main PROC
+mov eax, offset Text
+mov ebx, Dlzka
+INVOKE KontrolaVelkyPismen,ebx,eax
+
+mov edi,0
+mov ecx,11
+Hladanie0:
+cmp Text[edi],0
+je Pokracuj
+inc edi
+loop Hladanie0
+Pokracuj:
+mov PoziciaNuly,edi
+
+mov ecx, PoziciaNuly
+mov edi,0
+Sifrovanie:
+xor ebx,ebx
+mov bl, Text[edi]
+sub bl,65
+mov al,90
+sub al,bl
+call WriteChar
+mov al,' '
+call WriteChar
+
+inc edi
+loop Sifrovanie
+
+lea edx,filename
+call CreateOutputFile
+mov outfile, eax
+
+mov eax, outfile
+lea edx, Sprava
+mov ecx,lengthof Sprava
+call WriteToFile
+
+mov eax, outfile
+call CloseFile
+
+
+	exit
+main ENDP
+
+END main
