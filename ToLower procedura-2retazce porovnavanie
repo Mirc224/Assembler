@@ -1,0 +1,69 @@
+TITLE MASM Template						(main.asm)
+
+INCLUDE Irvine32.inc
+.data
+RetazecR DB 27 dup (?)
+RetazecS DB 27 dup (?)
+Vysledny DB 30 dup (0)
+
+.code
+
+ToLower PROC USES eax ebx ecx edx edi esi paAdresa
+mov edi,0
+mov ebx, paAdresa
+Zmensovanie:
+mov byte ptr al,byte ptr [ebx + edi]
+cmp al,0
+je Zaver
+cmp al,96
+ja PokracujDalej
+add al, 32
+mov byte ptr[ebx + edi], byte ptr al
+PokracujDalej:
+inc edi
+jmp Zmensovanie
+Zaver:
+ret
+ToLower ENDP
+
+
+
+main PROC
+mov edx, offset RetazecR
+mov ecx, 27
+call ReadString
+mov edx, offset RetazecS
+mov ecx, 27
+call ReadString
+mov edx,offset RetazecR
+INVOKE ToLower,edx
+call WriteString
+mov edx,offset RetazecS
+INVOKE ToLower,edx
+call WriteString
+
+
+mov edi,0
+Prehladavanie:
+mov al,RetazecR[edi]
+mov ah,RetazecS[edi]
+cmp al,ah
+jne Koniec
+mov Vysledny[edi],al
+inc edi
+cmp edi,27
+je Koniec
+jmp Prehladavanie
+Koniec:
+mov ecx,3
+Doplnanie:
+mov Vysledny[edi],'*'
+inc edi
+loop Doplnanie
+mov edx, offset Vysledny
+call WriteString
+
+	exit
+main ENDP
+
+END main
