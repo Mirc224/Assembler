@@ -10,17 +10,17 @@ Desat DW 10
 
 .code
 
-main PROC
+IntToStr PROC USES eax ebx ecx edx esi edi paCislo,paAdresa
 
-mov esi, 32000
+mov esi, paCislo
+mov ebx, paAdresa
 cmp esi,0  
 jle L1             
-mov PrevedeneCislo,'+'
+mov byte ptr [ebx],byte ptr '+'
 Jmp L2          
 L1:neg esi        
-mov PrevedeneCislo,'-'
+mov  byte ptr [ebx],byte ptr '-'
 L2:
-
 
 mov edi,1
 Cyklus:
@@ -38,15 +38,15 @@ cmp edi,1
 jne Pokracovanie
 cmp esi,10
 jne Nedesiatka
-mov PrevedeneCislo[1],'1'
-mov PrevedeneCislo[2],'0'
-mov PrevedeneCislo[3],0
+mov  byte ptr [ebx + 1],'1'
+mov  byte ptr [ebx + 2],'0'
+mov  byte ptr [ebx + 3],0
 jmp Koniec
 Nedesiatka:
 mov eax,esi
 add eax,48
-mov PrevedeneCislo[1],al
-mov PrevedeneCislo[2],0
+mov byte ptr [ebx + 1],al
+mov byte ptr [ebx + 2],0
 jmp Koniec
 Pokracovanie:
 dec edi
@@ -61,20 +61,31 @@ Nasobenie:
 mul Desat
 loop Nasobenie
 pop edx
+push ebx
 mov ebx,eax
 mov eax,edx
 xor edx,edx
 div ebx
 add eax,48
-mov PrevedeneCislo[edi],al
+pop ebx
+mov  byte ptr [ebx + edi],al
 inc edi
 mov ecx,esi
 loop Prevod
 add edx,48
-mov PrevedeneCislo[edi],dl
+mov  byte ptr [ebx + edi],dl
 inc edi
-mov PrevedeneCislo[edi],0
+mov  byte ptr [ebx + edi],0
 Koniec:
+ret
+IntToStr ENDP
+
+
+main PROC
+
+call ReadInt
+mov edx, OFFSET PrevedeneCislo
+INVOKE IntToStr,eax,edx
 mov edx, OFFSET PrevedeneCislo
 call WriteString
 
