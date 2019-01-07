@@ -1,15 +1,21 @@
+a)Definujte v pamäti maticu celých čísel so znamienkom typu word. Matica rozmer 3x5 a je uložená po riadkoch.Vzpíšte číslo v každom riadku matice.
+b)Vypíšte priemer každého riadku matice. Na výpis použite funkciu WriteFloat- vypíše register st(0).
+c)Vypíšte v kotrom riadku je najväčšie číslo celej matice.
+
+
+
 TITLE MASM Template						(main.asm)
 
 INCLUDE Irvine32.inc
 .data
 Matica DW -1,-1,-1,-1,-1
 DW 9,7,6,50,12
-DW 5,11,10,14,19
+DW 5,11,10,14,190
 
 NajvacsieCisloRiadku DD 0
-NajvacsieCisloMatice DD -32000
+NajvacsieCisloMatice DD -32766
 IndexRiadkuNajvacsiehoCisla DD 0
-Sprava DB "Riadok v ktorom sa nachadza najvacsie cislo je: ",0
+Sprava DB "Index riadku v ktorom sa nachadza najvacsie cislo je: ",0
 
 SucetRiadku DD 0.0
 
@@ -26,7 +32,7 @@ VonkajsiCyklus:
 mov edx,ecx
 mov ecx,PocetStlpcov
 mov esi,0
-mov NajvacsieCisloRiadku, -32000
+mov NajvacsieCisloRiadku, -32766
 VnutornyCyklus:
 xor eax,eax
 mov al,10
@@ -86,6 +92,12 @@ inc esi
 loop VnutronyCyklusNaPriemerRiadku
 fld Cislo5
 fdiv
+mov eax,edi
+call WriteInt
+mov al,'.'
+call WriteChar
+mov al,' '
+call WriteChar
 call WriteFloat
 mov al,0Ah
 call WriteChar
