@@ -1,0 +1,108 @@
+TITLE MASM Template						(main.asm)
+
+INCLUDE Irvine32.inc
+.data
+Matica DW -1,-1,-1,-1,-1
+DW 9,7,6,50,12
+DW 5,11,10,14,19
+
+NajvacsieCisloRiadku DD 0
+NajvacsieCisloMatice DD -32000
+IndexRiadkuNajvacsiehoCisla DD 0
+Sprava DB "Riadok v ktorom sa nachadza najvacsie cislo je: ",0
+
+SucetRiadku DD 0.0
+
+Cislo5 DD 5.0
+
+PocetRiadkov equ 3
+PocetStlpcov equ 5
+
+.code
+main PROC
+mov ecx, PocetRiadkov
+mov edi,0
+VonkajsiCyklus:
+mov edx,ecx
+mov ecx,PocetStlpcov
+mov esi,0
+mov NajvacsieCisloRiadku, -32000
+VnutornyCyklus:
+xor eax,eax
+mov al,10
+push edx
+mul edi
+push edi
+mov edi, eax
+xor eax,eax
+mov ax, Matica[edi + esi*2]
+cwde
+pop edi
+pop edx
+mov ebx, NajvacsieCisloRiadku
+cmp eax, ebx
+jl Pokracuj
+mov NajvacsieCisloRiadku, eax
+mov ebx, NajvacsieCisloMatice
+cmp eax,NajvacsieCisloMatice
+jl Pokracuj
+mov NajvacsieCisloMatice,eax
+mov IndexRiadkuNajvacsiehoCisla,edi
+Pokracuj:
+inc esi
+loop VnutornyCyklus
+mov eax, NajvacsieCisloRiadku
+call WriteInt
+mov al,0Ah
+call WriteChar
+mov al,0Dh
+call WriteChar
+inc edi
+mov ecx,edx
+loop VonkajsiCyklus
+
+mov ecx, PocetRiadkov
+mov edi,0
+CyklusNaPriemerRiadku:
+mov edx, ecx
+finit
+mov SucetRiadku,0
+fld SucetRiadku
+mov ecx, PocetStlpcov
+mov esi,0
+VnutronyCyklusNaPriemerRiadku:
+xor eax,eax
+mov al,10
+push edx
+mul edi
+push edi
+mov edi, eax
+xor eax,eax
+fild Matica[edi + esi*2]
+faddp st(1),st(0)
+pop edi
+pop edx
+inc esi
+loop VnutronyCyklusNaPriemerRiadku
+fld Cislo5
+fdiv
+call WriteFloat
+mov al,0Ah
+call WriteChar
+mov al,0Dh
+call WriteChar
+mov ecx,edx
+inc edi
+loop CyklusNaPriemerRiadku
+
+mov edx, offset Sprava
+call WriteString
+mov eax,IndexRiadkuNajvacsiehoCisla
+call WriteInt
+
+
+
+	exit
+main ENDP
+
+END main
